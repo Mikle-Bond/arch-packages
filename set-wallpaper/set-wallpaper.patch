@@ -1,0 +1,29 @@
+diff -ura src/set-wallpaper-1.0/set_wallpaper.py src.new/set-wallpaper-1.0/set_wallpaper.py
+--- set-wallpaper-1.0/set_wallpaper.py	2016-08-06 20:39:44.000000000 +0300
++++ set-wallpaper-1.0.new/set_wallpaper.py	2018-05-27 05:10:06.072129429 +0300
+@@ -116,6 +116,16 @@
+         surface, mimetype = cairocffi.pixbuf.decode_to_image_surface(f.read())
+         return surface
+ 
++def scale_image(image, w, h):
++    iw = float(image.get_width())
++    ih = float(image.get_height())
++    scale_xy = max(h/ih, w/iw)
++
++    with cairocffi.Context(image) as ctx:
++        ctx.scale(scale_xy, scale_xy)
++        ctx.set_source_surface(image)
++        ctx.paint()
++    return image
+ 
+ def fade_background_to_image(path, secs, fps):
+     # Assume the painting takes 0 seconds for this calculation. In reality
+@@ -130,6 +140,8 @@
+     pixmap = wrapper.get_current_background()
+     surface = wrapper.create_surface_for_pixmap(pixmap)
+ 
++    image = scale_image(image, wrapper.width, wrapper.height)
++
+     with cairocffi.Context(surface) as context:
+         context.set_source_surface(image)
+         opacity = 0
